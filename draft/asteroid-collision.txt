@@ -1,0 +1,35 @@
+https://leetcode.com/problems/asteroid-collision/
+
+每次加入一個新的天體來做比較:
+
+如果倖存者列表有東西並且倖存者列表的最後一個東西和新的天體互相靠近:
+    如果新的天體比較大: 把倖存者列表最後一個移出, 再重新比較
+    否則:
+        如果兩個都死掉: 把列表最後一個移出
+        看下一個
+否則: 直接加入倖存者列表, 看下一個
+    看是靠近或遠離:
+    如果是遠離: 直接加入倖存者列表, 看下一個
+    如果是靠近:
+        看是新的存活或列表的最後一個存活:
+            如果是列表的最後一個存活: 看下一個
+            如果是新的存活: 把列表最後一個移出, 再重新比較
+            如果兩個都死掉: 把列表最後一個移出, 看下一個
+
+```python
+class Solution:
+    def asteroidCollision(self, asteroids: List[int]) -> List[int]:
+        survives = []
+        for x in asteroids:
+            while survives and survives[-1] > 0 and x < 0: # collision
+                if survives[-1] + x < 0: survives.pop()
+
+                else:
+                    if survives[-1] + x == 0: survives.pop()
+
+                    break
+            else:
+                survives.append(x)
+
+        return survives
+```

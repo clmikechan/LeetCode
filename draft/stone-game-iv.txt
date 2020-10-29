@@ -1,0 +1,24 @@
+https://leetcode.com/problems/stone-game-iv/
+
+難度為 Hard
+
+第一個能過的版本
+效果不是很好, 但至少可以 ACCEPT
+
+遍歷比 n 小的所有平方數 只要 n - 某個平方數為 False, n 就是 True
+
+直接解會超時, 所以用額外空間來紀錄已經解過的案例
+```python
+buff = {1: True}
+class Solution:
+    def winnerSquareGame(self, n: int) -> bool:
+        if n in buff: return buff[n]
+        ret = True
+        for i in range(1, int(n ** 0.5) + 1):
+            if n - i ** 2 in buff:
+                ret = ret and buff[n - i ** 2]
+            else:
+                ret = ret and self.winnerSquareGame(n - i ** 2)
+        buff[n] = not ret
+        return not ret
+```

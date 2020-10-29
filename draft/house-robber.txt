@@ -1,0 +1,32 @@
+https://leetcode.com/problems/house-robber/
+```python
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        prev, now = 0, 0
+        for num in nums: prev, now = now, max(now, prev + num)
+
+        return now
+```
+
+```python
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        prev, now = 0, 0
+        for num in nums: prev, now = now, max(now, prev + num)
+
+        return now
+```
+https://leetcode.com/problems/house-robber-ii/
+```python
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        if not nums: return 0
+
+        if len(nums) == 1: return nums[0]
+
+        prev1, now1, prev2, now2 = 0, 0, 0, nums[0]
+        for num in nums[1:-1]: prev1, now1, prev2, now2 = now1, max(now1, prev1 + num), now2, max(now2, prev2 + num)
+
+        prev1, now1 = now1, max(now1, prev1 + nums[-1])
+        return max(now1, now2)
+```

@@ -1,0 +1,109 @@
+https://leetcode.com/problems/maximize-distance-to-closest-person/
+
+第一直覺是這樣的:
+最左邊如果是 0, 其最近的為距離 為為第一個 1
+最右邊如果是 0, 其最近的為距離 為為最後一個 1
+
+所以分別把最左邊的 0's 以及最右邊的 0's 都去掉 直到最左最右都是 1 為止
+然後用兩個 list 來遍歷剩下來的 seats.規則:
+第一個 list:
+    如果 seats 對應位置為 1: list 存放 0, 否則 list 存放左邊的值 + 1, 意即跟左邊的最靠近的 1 的位置
+第二個 list 則是存放跟右邊的最靠近的 1 的位置
+
+然後兩個 list 同位置的最小值即為其與最近的 1 的位置
+
+```python
+class Solution:
+    def maxDistToClosest(self, seats: List[int]) -> int:
+        start, end = 0, 0
+        while seats[0] == 0:
+            start += 1
+            seats.pop(0)
+
+        while seats[-1] == 0:
+            end += 1
+            seats.pop()
+
+        l = []
+        for x in seats:
+            if x == 1: l.append(0)
+
+            else: l.append(l[-1] + 1)
+
+        r = []
+        for x in seats[-1::-1]:
+            if x == 1: r.insert(0, 0)
+
+            else: r.insert(0, r[0] + 1)
+
+        #print(start, end, l, r)
+        return max(start, end, max([min(x) for x in zip(l, r)]))
+```
+
+但是發現這樣會花恨多時間, 檢查程式後發現:
+其實不用跑第二個 list. 舉例來說
+
+```python
+[1,0,0,0,1]
+```
+跟左邊的距離為:
+```python
+[0,1,2,3,0]
+```
+跟右邊的距離則為
+[0,3,2,1,0]
+
+
+中間為偶數個 0 的例子:
+最遠距離為 (3 + 1) // 2 = 2
+
+```python
+[1,0,0,0,0,1]
+```
+跟左邊的距離為:
+```python
+[0,1,2,3,4,0]
+```
+跟右邊的距離則為
+[0,4,3,2,1,0]
+
+最遠距離則為 (4 + 1) // 2
+
+也就是只要跑一邊的距離, 將 (最大值 + 1) // 2 即可
+
+```python
+class Solution:
+    def maxDistToClosest(self, seats: List[int]) -> int:
+        start, end = 0, 0
+        while seats[0] == 0:
+            start += 1
+            seats.pop(0)
+
+        while seats[-1] == 0:
+            end += 1
+            seats.pop()
+
+        l = []
+        for x in seats:
+            if x == 1: l.append(0)
+
+            else: l.append(l[-1] + 1)
+
+        #print(start, end, l, r)
+        return max(start, end, (max(l) + 1) // 2)
+```
+
+
+此外: 最左邊的 0 以及最右邊的 0 其實也可以不用 pop 出來
+```python
+class Solution:
+    def maxDistToClosest(self, seats: List[int]) -> int:
+        start, end = seats.index(1), seats[-1::-1].index(1)
+
+        l = []
+        for x in seats[start:~end]: l.append(0 if x == 1 else l[-1] + 1)
+
+        if not l: return max(start, end)
+
+        return max(start, end, (max(l) + 1) // 2)
+```

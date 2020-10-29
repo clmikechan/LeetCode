@@ -1,0 +1,30 @@
+https://leetcode.com/problems/remove-covered-intervals/
+
+先以起點來排序排序規則:
+```python
+    intervals.sort(key = lambda x: (x[0], -x[1]))
+```
+    起點比較先地放在前面
+    起點一樣的將終點比舊後面的放在前面
+之後留下第一個的終點來跟第二項以後的逐項比較
+計數器至少為一
+```python
+    count = 1
+    last = intervals[0][1]
+```
+如果新的終點在比較後面:
+    不可能會被前面的包圍
+    所以把被留下來做比較的終點改為最新一項的終點
+    並且要把計數器加一
+如果新的終點比較前面:
+    此項即為被包圍的
+```python
+    for _, y in intervals[1:]:
+        if y > last:
+            count += 1
+            last = y
+```
+最後計數器之值即為答案
+```
+    return count
+```

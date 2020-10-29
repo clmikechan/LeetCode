@@ -1,0 +1,52 @@
+https://leetcode.com/problems/minimum-domino-rotations-for-equal-row/
+
+用四個變數分別記錄
+aa = A[0] = A[i] 並且 A[0] != B[i]
+ab = A[0] = B[i] 並且 A[0] != A[i]
+ba = B[0] = A[i] 並且 B[0] != B[i]
+bb = B[0] = B[i] 並且 B[0] != A[i]
+再用兩個變數分別記錄
+checkA = A[0] 是否在每一個 (A[i], B[i]) 都存在
+checkB = B[0] 是否在每一個 (A[i], B[i]) 都存在
+
+如果 not checkA 並且 not checkB 則無解
+如果 checkA 則取 aa, ab 較小者
+否則取 ba, bb 較小者
+
+```python
+class Solution:
+    def minDominoRotations(self, A: List[int], B: List[int]) -> int:
+        aa =  ab = ba = bb = 0
+        a0, b0 = A[0], B[0]
+        checkA = checkB = True
+        for i in range(len(A)):
+            ai, bi = A[i], B[i]
+            if checkA:
+                if ai == bi == a0:
+                    pass
+                elif ai == a0:
+                    aa += 1
+                elif bi == a0:
+                    ab += 1
+                else:
+                    checkA = False
+
+            if checkB:
+                if ai == bi == b0:
+                    pass
+                elif ai == b0:
+                    ba += 1
+                elif bi == b0:
+                    bb += 1
+                else:
+                    checkB = False
+
+            if not (checkA or checkB): return -1
+
+        if checkA: return min(aa, ab)
+
+        return min(ba, bb)
+```
+複雜度:
+time: O(len(A))(一次單迴圈可解)
+space: O(1)(只用固定的額外變數)

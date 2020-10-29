@@ -1,0 +1,56 @@
+https://leetcode.com/problems/sort-list/
+
+由  O(n logn) time and O(1) memory
+可知其是在求合併排序之作法
+維基百科上的合併排序演算法成
+https://zh.wikipedia.org/wiki/%e5%90%88%e4%bd%b5%e6%8e%92%e5%ba%8f
+
+將其改寫成 Linked List 的版本
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution:
+    def sortList(self, head: ListNode) -> ListNode:
+        if not head or not head.next: return head
+        second = fast = head
+        while fast:
+            fast = fast.next
+            if fast:
+                fast = fast.next
+                if fast and fast.next:
+                    second = second.next
+        lend = second
+        second = second.next
+        lend.next = None
+        l = self.sortList(head)
+        r = self.sortList(second)
+        ret = cur = None
+        while l and r:
+            if l.val <= r.val:
+                if cur:
+                    cur.next = l
+                    cur = cur.next
+                else:
+                    ret = cur = l
+                l = l.next
+            else:
+                if cur:
+                    cur.next = r
+                    cur = cur.next
+                else:
+                    ret = cur = r
+                r = r.next
+        if l: cur.next = l
+        if r: cur.next = r
+        return ret
+```
+
+
+說明
+
+1. 依次將列表分割成兩半, 直至列表長度小於 2
+2. 將兩個半個列表依次排序
+3. 每次都從做排序後的兩個子列表中取最小值放入合併列表

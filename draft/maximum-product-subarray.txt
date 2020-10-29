@@ -1,0 +1,120 @@
+https://leetcode.com/problems/maximum-product-subarray/
+
+1. 0 會把列表分成三塊:
+> 1. 0 之前的部分
+> 2. 0 本身
+> 3. 0 之後的部分
+
+2. 單一不含0區塊中只有偶數個負數 => 整個區塊之乘積
+3. 單一不含0區塊中含有奇數個負數 => 分成第一個負數之後之乘積(不包含第一個負數)以及最後一個負數之前之乘積(不包含最後一個負數)比大小
+
+```python
+class Solution:
+    def maxProduct(self, nums: List[int]) -> int:
+        proc = [[]]
+        
+        for x in nums:
+            if x > 0:
+                if proc[-1] and proc[-1][-1] > 0:
+                    proc[-1][-1] *= x
+                else: proc[-1].append(x)
+            elif x < 0:
+                proc[-1].append(x)
+            else:
+                proc.append([0])
+                proc.append([])
+
+        if not proc[0]: proc.pop(0)
+        if not proc[-1]: proc.pop(-1)
+
+        ret = None
+        for l in proc:
+            a = 1
+            b = None
+            c = None
+            passeNegative = False
+            bufferC = None
+            print(l)
+            for x in l:
+                a *= x
+                if passeNegative:
+                    if not b: b = x
+                    else: b *= x
+                else:
+                    if x < 0: passeNegative = True
+
+                if x < 0:
+                    if bufferC:
+                        if c : c *= bufferC
+                        else: c = bufferC
+                    bufferC = x
+                else:
+                    if bufferC: bufferC *= x
+                    else: bufferC = x
+
+            if not b: b = a
+
+            if not c: c = a
+
+            if ret is None: ret = max(a, b, c)
+            else: ret = max(ret, a, b, c)
+
+        return ret
+```
+
+
+目前的問題在怎樣可以不做分段即做判斷?
+就是變成只掃一遍:
+```python
+class Solution:
+    def maxProduct(self, nums: List[int]) -> int:
+        ret, a, b ,c, passeNegative, bufferC= None, None, None, None, False, None
+
+        for x in nums:
+            if x == 0:
+                # previous part process
+                if not a: a = 0
+                if not b: b = a
+
+                if not c: c = a
+
+                if ret is None: ret = max(a, b, c)
+                else: ret = max(ret, a, b, c)
+
+                # 0 part
+                if ret < 0: ret = 0
+
+                # init next part
+                a, b, c, passeNegative, bufferC = None, None, None, False, None
+
+                continue
+
+            if not a: a = x
+            else: a *= x
+
+            if passeNegative:
+                if not b: b = x
+                else: b *= x
+            else:
+                if x < 0: passeNegative = True
+
+            if x < 0:
+                if bufferC:
+                    if c : c *= bufferC
+                    else: c = bufferC
+                bufferC = x
+            else:
+                if bufferC: bufferC *= x
+                else: bufferC = x
+
+        if not a: a = ret
+
+        if not b: b = a
+
+        if not c: c = a
+
+        if ret is None: ret = max(a, b, c)
+        else: ret = max(ret, a, b, c)
+
+        return ret
+```

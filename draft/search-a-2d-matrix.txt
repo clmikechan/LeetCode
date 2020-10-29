@@ -1,0 +1,48 @@
+https://leetcode.com/problems/search-a-2d-matrix/
+
+使用兩次 binary search
+第一次是找每一個 row 第一個元素, 如果 matrix[n][0] < target < matrix[n + 1][0],
+就將焦點放到 matrix[n] 中作第二次的 binary search
+
+
+```python
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        if not matrix: return False
+        if not matrix[0]: return False
+        m, n = len(matrix), len(matrix[0])
+        sRow, eRow = 0, m - 1
+        nRow = None
+        if matrix[sRow][0] > target: return False
+        if matrix[sRow][0] == target: return True
+        if matrix[eRow][0] == target: return True
+        if matrix[eRow][0] < target:
+            nRow = eRow
+        else:
+            while True:
+                iRow = sRow + (eRow - sRow) // 2
+                if matrix[iRow][0] == target: return True
+                if matrix[iRow][0] > target: eRow = iRow
+                else:
+                    if matrix[iRow + 1][0] == target: return True
+                    if matrix[iRow + 1][0] < target: sRow = iRow
+                    else:
+                        nRow = iRow
+                        break
+        #print(target, matrix[nRow])
+        sColumn = 0
+        eColumn = n - 1
+        row = matrix[nRow]
+        if row[eColumn] < target: return False
+        if row[eColumn] == target: return True
+        while True:
+            iColumn = sColumn + (eColumn - sColumn) // 2
+            if row[iColumn] == target: return True
+            if row[iColumn] > target: eColumn = iColumn
+            else:
+                if row[iColumn + 1] == target: return True
+                if row[iColumn + 1] > target: return False
+                else:
+                    if eColumn - sColumn == 1: return False
+                    sColumn = iColumn
+```
